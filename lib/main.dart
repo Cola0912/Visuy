@@ -1,36 +1,37 @@
 import 'package:flutter/material.dart';
-import 'screens/profile_screen.dart';
-import 'screens/search_screen.dart';
-import 'screens/add_screen.dart';
-import 'screens/contacts_screen.dart';
+import 'package:calenhub/screens/search_screen.dart';
+import 'package:calenhub/screens/add_screen.dart';
+import 'package:calenhub/screens/contacts_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _screens = <Widget>[
-    ProfileScreen(),
+  static const List<Widget> _widgetOptions = <Widget>[
     SearchScreen(),
     AddScreen(),
     ContactsScreen(),
@@ -45,32 +46,26 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter Demo with BottomNavigationBar'),
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      body: _screens.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
-        items: const [
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.person, color: Colors.orange),
-            label: 'Profile',
+            icon: Icon(Icons.calendar_today), // カレンダーアイコンに変更
+            label: 'Calender',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search, color: Colors.grey),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add, color: Colors.grey),
+            icon: Icon(Icons.add),
             label: 'Add',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.contacts, color: Colors.grey),
+            icon: Icon(Icons.contacts),
             label: 'Contacts',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped,
       ),
     );

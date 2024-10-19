@@ -10,7 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  table_calendar: ^3.0.0
+  intl: ^0.17.0  # 日付フォーマット用のパッケージ
   http: ^0.13.3  # この行を追加して http パッケージを依存関係に含めます
+  shared_preferences: ^2.0.9
 
 dev_dependencies:
   flutter_test:
@@ -19,3 +22,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/spanyan.png

@@ -5,10 +5,8 @@ class AddScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text('Add Screen'),
-      ),
+    return const Center(
+      child: Text('Add Screen'),
     );
   }
 }
