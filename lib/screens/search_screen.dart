@@ -321,6 +321,7 @@ class _SearchScreenState extends State<SearchScreen> {
             focusedDay: _focusedDay,
             firstDay: DateTime.utc(2020, 10, 16),
             lastDay: DateTime.utc(2030, 3, 14),
+            rowHeight: 26.0, // ここで行の高さを半分に設定
             selectedDayPredicate: (day) {
               return isSameDay(_selectedDay, day);
             },

@@ -1,3 +1,4 @@
+import 'dart:async'; // タイマーを使用するために追加
 import 'package:flutter/material.dart';
 import 'profile_screen.dart'; // ProfileScreen をインポート
 import 'dart:convert';
@@ -16,30 +17,53 @@ class _ContactsScreenState extends State<ContactsScreen> {
   String _affiliation = "東京工科大学"; // デフォルトの所属
   String _introduction = "自己紹介"; // デフォルトの自己紹介
   String _link = "https://x.com/home"; // デフォルトのリンク
-  int _fatigueLevel = 0; // デフォルトの疲労度
+  int _fatigueLevel = 0; // 初期値を0に設定
   int _friends = 20; // デフォルトのフレンド数
   int _teams = 3; // デフォルトのチーム数
-
-  String _profileNumber = ''; // 初期値として管理番号01を使用
+  String _profileNumber = '01'; // 初期値として管理番号01を使用
+  Timer? _timer; // タイマーを保持する変数
 
   @override
   void initState() {
     super.initState();
     _loadProfileNumber(); // 保存された管理番号をロード
+    _startAutoRefresh(); // 1秒おきにデータを自動取得
   }
 
-  // 画面に戻ってきたときに疲労度を再計算する
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _fetchCalendarData(); // カレンダーデータを取得し、疲労度を計算
+  void dispose() {
+    _timer?.cancel(); // ウィジェットが破棄される際にタイマーを停止
+    super.dispose();
   }
 
-  // SharedPreferencesから管理番号を読み込み、プロフィールとカレンダーのデータを取得する
+  // 1秒おきにデータを自動取得するタイマーを開始
+  void _startAutoRefresh() {
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      _fetchProfile(); // プロフィールを取得
+      _fetchCalendarData(); // カレンダーデータを取得
+    });
+  }
+
+  // プロフィール設定画面から戻ってきた際に再度データを更新し、疲労度を再計算
+  Future<void> _updateFromProfile(Map<String, String>? result) async {
+    if (result != null) {
+      setState(() {
+        _name = result['name'] ?? _name;
+        _affiliation = result['affiliation'] ?? _affiliation;
+        _introduction = result['introduction'] ?? _introduction;
+        _link = result['link'] ?? _link;
+        _friends = int.tryParse(result['friends'] ?? '20') ?? 20;
+        _teams = int.tryParse(result['teams'] ?? '3') ?? 3;
+      });
+      _fetchCalendarData(); // プロフィールが更新されたら疲労度も更新
+    }
+  }
+
+  // SharedPreferencesから管理番号を読み込み、プロフィールとカレンダーのデータを取得し疲労度も再計算
   Future<void> _loadProfileNumber() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? savedProfileNumber = prefs.getString('profile_number');
-    if (savedProfileNumber != null) {
+    if (savedProfileNumber != null && savedProfileNumber != _profileNumber) {
       setState(() {
         _profileNumber = savedProfileNumber; // 管理番号を設定
       });
@@ -60,7 +84,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
           _affiliation = data['affiliation'] ?? _affiliation;
           _introduction = data['introduction'] ?? _introduction;
           _link = data['link'] ?? _link;
-          _fatigueLevel = int.tryParse(data['fatigueLevel'] ?? '10') ?? 10;
           _friends = int.tryParse(data['friends'] ?? '20') ?? 20;
           _teams = int.tryParse(data['teams'] ?? '3') ?? 3;
         });
@@ -81,8 +104,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> calendarData = json.decode(response.body);
         setState(() {
-          _fatigueLevel =
-              _calculateFatigueLevel(calendarData); // カレンダーのデータを基に疲労度を計算
+          _fatigueLevel = _calculateFatigueLevel(calendarData); // 疲労度を計算
         });
       } else {
         throw Exception('Failed to load calendar data');
@@ -117,12 +139,24 @@ class _ContactsScreenState extends State<ContactsScreen> {
       }
     });
 
-    // 合計を70で割って疲労度を計算
+    // 合計が0なら疲労度は0に設定
     int totalEventParameters = totalImportance + totalImpact;
-    if (totalEventParameters > 0) {
-      return (totalEventParameters / 70 * 100).round(); // パーセンテージに変換
+    if (totalEventParameters == 0) {
+      return 0;
     }
-    return 10; // イベントがない場合はデフォルト値を返す
+
+    return (totalEventParameters / 70 * 100).round(); // パーセンテージに変換
+  }
+
+  // プロファイルセーブ時に管理番号を保存し、それに基づいてデータを取得
+  Future<void> _saveProfile(String newProfileNumber) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('profile_number', newProfileNumber); // 新しい管理番号を保存
+    setState(() {
+      _profileNumber = newProfileNumber; // プロフィール番号を更新
+    });
+    await _fetchProfile(); // 更新された番号でプロフィールを取得
+    await _fetchCalendarData(); // 更新された番号でカレンダーデータを取得
   }
 
   @override
@@ -227,23 +261,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                             builder: (context) => ProfileScreen(),
                           ),
                         );
-
-                        if (result != null && result is Map<String, String>) {
-                          setState(() {
-                            _name = result['name'] ?? _name;
-                            _affiliation =
-                                result['affiliation'] ?? _affiliation;
-                            _introduction =
-                                result['introduction'] ?? _introduction;
-                            _link = result['link'] ?? _link;
-                            _fatigueLevel =
-                                int.tryParse(result['fatigueLevel'] ?? '10') ??
-                                    10;
-                            _friends =
-                                int.tryParse(result['friends'] ?? '20') ?? 20;
-                            _teams = int.tryParse(result['teams'] ?? '3') ?? 3;
-                          });
-                        }
+                        _updateFromProfile(result); // プロフィール画面からの結果を反映
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.lightBlue,
@@ -252,17 +270,6 @@ class _ContactsScreenState extends State<ContactsScreen> {
                         ),
                       ),
                       child: Text("プロフィールを編集"),
-                    ),
-                    SizedBox(width: 10),
-                    OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.lightBlue),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text("マイページをシェア"),
                     ),
                   ],
                 ),

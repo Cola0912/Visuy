@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:calenhub/screens/search_screen.dart';
-import 'package:calenhub/screens/add_screen.dart';
 import 'package:calenhub/screens/contacts_screen.dart';
 
 void main() {
@@ -33,7 +32,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     SearchScreen(),
-    AddScreen(),
     ContactsScreen(),
   ];
 
@@ -52,15 +50,11 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today), // カレンダーアイコンに変更
+            icon: Icon(Icons.calendar_today), // カレンダーアイコン
             label: 'Calender',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Add',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.contacts),
+            icon: Icon(Icons.contacts), // 連絡先アイコン
             label: 'Contacts',
           ),
         ],
