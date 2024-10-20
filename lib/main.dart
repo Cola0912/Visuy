@@ -44,6 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor:
+          const Color.fromARGB(255, 28, 90, 167).withOpacity(0.9), // すごく薄い白に設定
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -59,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Color(0xFF44AAF6),
         onTap: _onItemTapped,
       ),
     );
