@@ -1,5 +1,5 @@
 
-# Calenhub
+# Visuy!
 
 ## プロジェクト概要
 
