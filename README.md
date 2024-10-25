@@ -3,7 +3,7 @@
 
 ## プロジェクト概要
 
-CalenhubはFlutterを使用して開発されたアプリケーションです。このプロジェクトは、ユーザーがプロフィール設定、検索、データの追加、連絡先管理などを行うことができるシンプルなモバイル/デスクトップアプリケーションを提供します。アプリの各画面は、BottomNavigationBarを使用して簡単に切り替えることができます。
+Visuy!はFlutterを使用して開発されたアプリケーションです。このプロジェクトは、ユーザーがプロフィール設定、検索、データの追加、連絡先管理などを行うことができるシンプルなモバイル/デスクトップアプリケーションを提供します。アプリの各画面は、BottomNavigationBarを使用して簡単に切り替えることができます。
 
 ## 機能
 
@@ -23,7 +23,7 @@ CalenhubはFlutterを使用して開発されたアプリケーションです�
 1. Flutter SDKをインストールしてください（[公式サイト](https://flutter.dev/docs/get-started/install)）。
 2. このリポジトリをクローンします。
    ```
-   git clone https://github.com/yourusername/calenhub.git
+   git clone https://github.com/yourusername/Visuy!.git
    ```
 3. 依存関係をインストールします。
    ```
